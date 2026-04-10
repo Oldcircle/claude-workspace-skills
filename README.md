@@ -2,100 +2,127 @@
 
 > **Start every project right. Check it anytime. Ship it in seconds.**
 
-A collection of [Claude Code](https://claude.ai/claude-code) slash commands that automate workspace conventions — so you can open a fresh session without losing context, and every project stays consistent from day one.
+A set of [Claude Code](https://claude.ai/claude-code) slash commands that give your AI assistant **project memory** — consistent documentation, convention checks, and workflow automation that survive across sessions.
 
-## Why
+## The Problem
 
-When you use AI-assisted development across many projects, the biggest win isn't code generation — it's **zero-cost context switching**. That requires every project to follow the same structure, the same documentation pattern, the same conventions.
+You start a new Claude Code session. The AI doesn't know your project structure, your conventions, or what you were working on yesterday. You explain everything again. Every. Single. Time.
 
-These skills encode those conventions into executable commands. No more forgetting to create `AGENTS.md` symlinks. No more inconsistent `CLAUDE.md` files. No more "wait, did I push this?"
+**These skills fix that.** They create and maintain the context files that let any new session pick up exactly where the last one left off.
 
 ## Skills
 
 | Command | What it does |
 |---------|-------------|
-| `/new-project` | Full project scaffolding — picks the right directory, inits git, creates `CLAUDE.md` from template, sets up runtime version locking, first commit |
-| `/health-check` | Audits current project against workspace conventions — checks for missing files, broken symlinks, stale docs, untracked secrets |
-| `/publish` | First-time GitHub publish — creates repo, pushes, records publish info in `CLAUDE.md` |
-| `/sync-fork` | Syncs upstream changes into your fork — auto-detects upstream, merges, rebases dev branches |
+| **`/new-project`** | Full project scaffolding — creates directory, initializes framework, generates `CLAUDE.md` with real project info, sets up version locking, first commit |
+| **`/health-check`** | Audits your project against AI collaboration best practices — checks for missing context files, stale docs, tracked secrets, broken symlinks |
+| **`/publish`** | First-time GitHub publish — creates repo (private by default), pushes, records publish info in project docs |
+| **`/sync-fork`** | Syncs upstream changes into your fork — auto-detects upstream, merges, rebases dev branches |
 
-## The Full Workflow
+## Works With or Without a Workspace
 
-These skills complement the existing `/onboard` and `/dev-init` commands:
+These skills **auto-detect your environment**:
 
-```
-/onboard        Clone & run any project, document everything
-                    ↓
-/dev-init        Add PLAN.md + STATUS.md for multi-session tracking
-                    ↓
-/new-project     Create a project from scratch (instead of onboard)
-                    ↓
-/health-check    Verify conventions at any time
-                    ↓
-/publish         Push to GitHub with proper records
-                    ↓
-/sync-fork       Keep forks up to date
-```
+| Environment | What happens |
+|-------------|-------------|
+| **Full workspace** (global `CLAUDE.md` with project index, directory conventions) | Skills use your conventions — right directories, index updates, full checks |
+| **Single project** (just a repo, no workspace structure) | Skills work at project level — creates `CLAUDE.md`, checks basics, skips workspace features |
+| **Somewhere in between** | Skills adapt — use what's available, skip what's not |
+
+No workspace setup required. No directories created that you didn't ask for. No config files dumped into your home directory.
 
 ## Install
 
 ```bash
-git clone https://github.com/Oldcircle/claude-workspace-skills.git ~/Opensource/projects/cli/claude-workspace-skills
-cd ~/Opensource/projects/cli/claude-workspace-skills
+# Clone the repo
+git clone https://github.com/Oldcircle/claude-workspace-skills.git
+cd claude-workspace-skills
+
+# Run the installer (creates symlinks to ~/.claude/commands/)
 chmod +x install.sh && ./install.sh
 ```
 
-The install script creates **symlinks** from `commands/` into `~/.claude/commands/`. Edit the source files and changes take effect immediately — no reinstall needed.
-
-## Uninstall
+The install script creates **symlinks**, not copies. Edit the source files and changes take effect immediately.
 
 ```bash
+# Uninstall
 ./install.sh --uninstall
 ```
 
-## What Gets Checked by `/health-check`
+## Quick Start
+
+### Just created a new project?
+```
+/new-project
+```
+Tell it your project name, tech stack, and description. It handles everything else — directory, git init, framework setup, `CLAUDE.md`, `.gitignore`, version locking.
+
+### Want to check if your project is set up well?
+```
+/health-check
+```
+Gets you a report like:
+```
+✅ CLAUDE.md exists with overview, tech stack, dev commands
+✅ AGENTS.md is a valid symlink
+❌ .gitignore missing node_modules/
+⚠️ STATUS.md last updated 18 days ago
+ℹ️ mise not installed, skipping version check
+```
+Offers to auto-fix what it can.
+
+### Ready to push to GitHub?
+```
+/publish
+```
+Creates a private repo, pushes, and records the GitHub URL in your `CLAUDE.md`. Done.
+
+### Working on a fork?
+```
+/sync-fork
+```
+Auto-detects the upstream repo, fetches changes, merges into your default branch, and optionally rebases your dev branches.
+
+## What is `CLAUDE.md`?
+
+`CLAUDE.md` is a file at the root of your project that tells Claude Code about your project — tech stack, how to run it, conventions, current status. Claude reads it automatically at the start of every session.
+
+Think of it as a **README for your AI assistant**. These skills create and maintain it so you don't have to.
+
+Paired with `AGENTS.md` (a symlink to `CLAUDE.md`), it ensures every AI tool that enters your project gets the same context.
+
+## Plays Well With Others
+
+These skills complement the existing `/onboard` and `/dev-init` commands:
+
+```
+Start from scratch     →  /new-project
+Take over a project    →  /onboard
+Track multi-session    →  /dev-init
+  development progress
+Check conventions      →  /health-check
+Push to GitHub         →  /publish
+Sync a fork            →  /sync-fork
+```
+
+## What Gets Checked
+
+`/health-check` adapts its checks to what's available in your environment:
 
 | Category | Checks |
 |----------|--------|
-| **Instruction files** | `CLAUDE.md` exists with required sections, `AGENTS.md` is a valid symlink |
-| **Version management** | `.mise.toml` exists and versions match runtime |
-| **Git hygiene** | `.gitignore` present, no large files tracked, no secrets committed |
-| **Active documents** | Listed docs actually exist, `STATUS.md` freshness |
-| **First-run record** | Documented in `CLAUDE.md` for vendor/fork projects |
-| **Workspace index** | Project registered in workspace `CLAUDE.md` |
-
-## What `/new-project` Sets Up
-
-```
-my-project/
-├── CLAUDE.md            # Filled with real project info, not blanks
-├── AGENTS.md            # → CLAUDE.md (symlink)
-├── .mise.toml           # Runtime version locked
-├── .gitignore           # Tech-stack appropriate
-├── PLAN.md              # If project has a development plan
-├── STATUS.md            # If project has a development plan
-└── (framework files)    # From create-next-app / vite / cargo init / etc.
-```
+| **AI context files** | `CLAUDE.md` exists with real content, `AGENTS.md` present |
+| **Version management** | `.mise.toml` exists (only if mise is installed) |
+| **Git hygiene** | `.gitignore` present, no secrets tracked, no huge files |
+| **Dev tracking** | `STATUS.md` freshness, `PLAN.md` has structure (only if they exist) |
+| **Publish record** | GitHub URL documented (only if remote exists) |
+| **Workspace index** | Project listed in workspace index (only if workspace detected) |
 
 ## Requirements
 
-- [Claude Code](https://claude.ai/claude-code) (CLI or IDE extension)
-- [GitHub CLI](https://cli.github.com/) (`gh`) — for `/publish` and `/sync-fork`
-- [mise](https://mise.jdx.dev/) — for runtime version management
-
-## Conventions Reference
-
-These skills enforce the conventions defined in:
-
-- [`ai-dev-guide.md`](https://github.com/user/dotfiles) — Full development workflow guide
-- Workspace `CLAUDE.md` — Directory structure, project index, documentation rules
-
-Key principles:
-- **`CLAUDE.md` is the single source of truth** for every project
-- **`AGENTS.md` is always a symlink** to `CLAUDE.md`
-- **Active documents checklist** in `CLAUDE.md` tells AI what to read
-- **`STATUS.md` is a session handoff doc**, not a changelog
-- **First-run and first-publish records** go in `CLAUDE.md`
+- [Claude Code](https://claude.ai/claude-code) — the CLI, desktop app, or IDE extension
+- [GitHub CLI](https://cli.github.com/) (`gh`) — needed for `/publish` and `/sync-fork`
+- [mise](https://mise.jdx.dev/) — optional, for runtime version management
 
 ## License
 
