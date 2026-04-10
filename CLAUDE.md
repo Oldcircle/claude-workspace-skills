@@ -40,6 +40,14 @@ claude-workspace-skills/
 本项目的 skill 与它们互补：
 - `/onboard` → `/dev-init` → `/new-project`（创建） / `/health-check`（检查） / `/publish`（发布）
 
+## 首次发布记录
+
+- **GitHub**: https://github.com/Oldcircle/claude-workspace-skills
+- **可见性**: public
+- **日期**: 2026-04-10
+- **默认分支**: main
+- **本地路径**: `/Users/yb/Opensource/projects/cli/claude-workspace-skills`
+
 ## 约定
 
 - 每个 command 文件是纯 Markdown，无 YAML frontmatter（与现有 dev-init/onboard 一致）
