@@ -40,7 +40,7 @@ These skills complement the existing `/onboard` and `/dev-init` commands:
 ## Install
 
 ```bash
-git clone https://github.com/<you>/claude-workspace-skills.git ~/Opensource/projects/cli/claude-workspace-skills
+git clone https://github.com/Oldcircle/claude-workspace-skills.git ~/Opensource/projects/cli/claude-workspace-skills
 cd ~/Opensource/projects/cli/claude-workspace-skills
 chmod +x install.sh && ./install.sh
 ```
